@@ -24,9 +24,10 @@ GPL, v2 or higher, as usual, which should have been included, blah blah.
 Compiling:
 
 	type 'make'
-	this results in the 'splitmastream' binary, hopefully.
+
+this results in the 'splitmastream' binary, hopefully.
 	
-Tested on various RedHat Linux distributions, but should compile
-(with maybe a couple trivial #include changes) on any modern Unix-like
-operating system.
+Tested on various RedHat Linux and Ubuntu/Debian distributions, but should
+compile (with maybe a couple trivial #include changes) on any modern
+Unix-like operating system.
 
