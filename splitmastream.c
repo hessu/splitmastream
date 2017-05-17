@@ -288,9 +288,10 @@ int main(int argc, char **argv)
 		if (debug)
 			fprintf(stderr, "looking for frame start at %lld\n", bytes_pos);
 		frame_start = bytes_pos;
-		if (c != 0xff)
+		if (c != 0xff) {
 			continue;
-			
+		}
+		
 		if ((r = readbyte(0, &c)) < 1) break;
 		if ((c & 0xe0) != 0xe0)
 			continue;
@@ -330,13 +331,18 @@ int main(int argc, char **argv)
 			continue;
 		}
 		if (bitrate_index == 15) {
-			if (debug) fprintf(stderr, "\tBad bitrate\n");
+			if (debug) fprintf(stderr, "\tBad bitrate index %d\n", bitrate_index);
 			continue;
 		}
 		bitrate = mpeg_bitrate_index[version-1][layer-1][bitrate_index];
 		sampling_rate = mpeg_sampling_index[version-1][sampling_index];
 		if (c & 0x02) padding = 1; else padding = 0;
 		if (debug) fprintf(stderr, "\tpadding %d bitrate %d sampling_rate %d\n", padding, bitrate, sampling_rate);
+		
+		if (bitrate > 512) {
+			if (debug) fprintf(stderr, "\tBad bitrate value %d for index %d\n", bitrate, bitrate_index);
+			continue;
+		}
 		
 		if (version == 1) {
 			if (layer == 1) {
@@ -355,6 +361,11 @@ int main(int argc, char **argv)
 			continue;
 		}
 		if (protect) frame_length += 2; // size of CRC
+		if (frame_length > 16384) {
+			if (debug) fprintf(stderr, "\tBad frame length %d, too long\n", frame_length);
+			continue;
+		}
+		
 		next_frame = frame_start + frame_length;
 		if (debug) fprintf(stderr, "\tframe length %d, next frame at %lld\n", frame_length, next_frame);
 		
